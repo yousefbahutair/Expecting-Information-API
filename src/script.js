@@ -1,8 +1,8 @@
 const checkStatusAndParse = (res) => {
     if(!res.ok){
         throw new Error(`Status Code Error:${res.status}`)
-        return res.json;
-    };
+    }
+        return res.json();;
 };
 fetch('https://swapi.co/api/planets') 
  .then(checkStatusAndParse)
@@ -16,7 +16,7 @@ fetch('https://swapi.co/api/planets')
  })
  .then(checkStatusAndParse)
  .then((data) => {
-    console.log('FETCHED NEXT 10 PLANETS');
+    console.log('FETCHED NEXT 11 PLANETS');
     for(let planet of data.results) {
         console.log(planet.name);
     }
