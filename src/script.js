@@ -1,28 +1,35 @@
 const checkStatusAndParse = (res) => {
-    if(!res.ok){
-        throw new Error(`Status Code Error:${res.status}`)
+    if (!res.ok) {
+        throw new Error(`Status Code Error: ${res.status}`);
     }
-        return res.json();;
+    return res.json();
 };
-fetch('https://swapi.co/api/planets') 
- .then(checkStatusAndParse)
- .then( (data) => {
-    console.log("FETCHED ALL PLANETS");
-    for(let planet of data.results) {
-        console.log( planet.name)
+
+function nextURL(data) {
+    return data.next;
+}
+
+function fetchNextPlanet(url) {
+    if (!url) {
+        console.log("NO MORE PAGES!!");
+        return Promise.reject("No more pages");
     }
-    const nextURL = data.next;
-    return fetch(nextURL)
- })
- .then(checkStatusAndParse)
- .then((data) => {
-    console.log('FETCHED NEXT 11 PLANETS');
-    for(let planet of data.results) {
-        console.log(planet.name);
+    return fetch(url);
+}
+
+function fetchMorePlanets(data) {
+    for (let planet of data.results) {
+        console.log("Planet Name: ", planet.name);
     }
- })
- .catch((err) => {
-  console.log('SOMETHING WENT WRONG WITH FETCH!');
-  console.log(err.status)
-  console.log(err);
- })
+    return data;
+}
+fetchNextPlanet("https://swapi.dev/api/planets/")
+    .then(checkStatusAndParse) 
+    .then(fetchMorePlanets)
+    .then(nextURL)
+    .then(fetchNextPlanet)
+    .then(checkStatusAndParse)
+    .then(fetchMorePlanets)
+    .catch((err) => {
+        console.log("An error occur", err);
+    });
